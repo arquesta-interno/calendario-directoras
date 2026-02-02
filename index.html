@@ -586,6 +586,136 @@
             border-color: #4A90E2;
         }
 
+        .print-option {
+            width: 100%;
+            text-align: left;
+            padding: 12px;
+            background: var(--color-bg);
+            border: 2px solid var(--color-border);
+        }
+
+        .print-option:hover {
+            background: var(--color-bg-light);
+        }
+
+        /* Print styles */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 1cm;
+            }
+
+            body {
+                background: white;
+                color: #000;
+                padding: 0;
+                margin: 0;
+            }
+
+            .header .controls,
+            .settings-menu,
+            .modal,
+            button:not(.print-keep) {
+                display: none !important;
+            }
+
+            .header {
+                margin-bottom: 10px;
+                page-break-after: avoid;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+                color: #000;
+            }
+
+            .print-header {
+                display: block !important;
+                margin-bottom: 10px;
+                font-size: 0.9rem;
+                color: #333;
+                border-bottom: 2px solid #000;
+                padding-bottom: 5px;
+            }
+
+            .gantt-container {
+                box-shadow: none;
+                background: white;
+                border: 1px solid #ccc;
+                page-break-inside: auto;
+            }
+
+            .gantt-table {
+                background: white;
+            }
+
+            .gantt-table th {
+                background: #f0f0f0 !important;
+                color: #000 !important;
+                border: 1px solid #999 !important;
+                font-size: 0.75rem;
+                padding: 6px 4px;
+            }
+
+            .gantt-table td {
+                border: 1px solid #ddd !important;
+                background: white !important;
+                color: #000 !important;
+                font-size: 0.7rem;
+                padding: 4px;
+            }
+
+            .provider-row {
+                background: #f5f5f5 !important;
+                page-break-after: avoid;
+            }
+
+            .provider-name {
+                color: #000 !important;
+                font-size: 0.85rem;
+            }
+
+            .provider-stats {
+                color: #333 !important;
+                font-size: 0.7rem;
+            }
+
+            .obra-code {
+                color: #333 !important;
+                font-size: 0.75rem;
+            }
+
+            .week-cell {
+                background: white !important;
+            }
+
+            .work-bar {
+                opacity: 1 !important;
+                font-size: 0.65rem;
+                height: 20px;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .work-bar.tentativo {
+                opacity: 0.7 !important;
+            }
+
+            /* Hide rows not in selected director for print */
+            body.print-filter .provider-row:not(.print-show),
+            body.print-filter tr:has(.obra-code):not(.print-show) {
+                display: none !important;
+            }
+
+            .logo {
+                height: 1.2rem;
+            }
+        }
+
+        .print-header {
+            display: none;
+        }
+
         @media print {
             .controls, .settings-menu {
                 display: none !important;
@@ -640,6 +770,11 @@
             <button id="addAssignmentBtn">+ Agregar obra</button>
             <button class="meeting-toggle" id="meetingToggle">📊 Modo Reunión</button>
         </div>
+    </div>
+
+    <div class="print-header">
+        <strong>Calendario de Directoras de Obra</strong><br>
+        <span id="printInfo"></span>
     </div>
 
     <div class="gantt-container">
@@ -749,10 +884,30 @@
         </div>
     </div>
 
+    <!-- Modal para opciones de impresión -->
+    <div class="modal" id="printModal">
+        <div class="modal-content">
+            <h2>Imprimir / Exportar PDF</h2>
+            <div class="form-group">
+                <label>Selecciona qué imprimir:</label>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                    <button type="button" class="print-option" data-director="all">📄 Imprimir todo</button>
+                    <hr style="border: none; border-top: 1px solid var(--color-border); margin: 5px 0;">
+                    <label style="font-size: 0.9rem; opacity: 0.8;">Por directora:</label>
+                    <div id="printDirectorOptions"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="secondary" id="closePrintBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Menu -->
     <div class="settings-menu">
         <div class="settings-btn" id="settingsBtn">⚙️</div>
         <div class="settings-dropdown" id="settingsDropdown">
+            <button id="printBtn">🖨️ Imprimir / PDF</button>
             <button id="manageWorksBtn">📋 Gestionar obras</button>
             <button id="manageDirectorsBtn">👥 Gestionar Directoras</button>
             <button id="horizonConfigBtn">📅 Horizonte: <span id="horizonLabel">4 meses</span></button>
@@ -830,6 +985,10 @@
             // Meeting mode
             document.getElementById('meetingToggle').addEventListener('click', toggleMeetingMode);
 
+
+            // Print
+            document.getElementById('printBtn').addEventListener('click', openPrintModal);
+            document.getElementById('closePrintBtn').addEventListener('click', closePrintModal);
             // Works management
             document.getElementById('manageWorksBtn').addEventListener('click', openWorksModal);
             document.getElementById('closeWorksBtn').addEventListener('click', closeWorksModal);
@@ -1448,6 +1607,97 @@
             if (saved) {
                 horizonMonths = parseInt(saved);
             }
+        }
+
+        function openPrintModal() {
+            // Populate director options
+            const printOptions = document.getElementById('printDirectorOptions');
+            printOptions.innerHTML = directors.map(d => 
+                `<button type="button" class="print-option" data-director="${d.name}">📄 ${d.name}</button>`
+            ).join('');
+            
+            // Add click handlers
+            document.querySelectorAll('.print-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const director = this.dataset.director;
+                    preparePrint(director);
+                });
+            });
+            
+            document.getElementById('printModal').classList.add('active');
+            document.getElementById('settingsDropdown').classList.remove('active');
+        }
+
+        function closePrintModal() {
+            document.getElementById('printModal').classList.remove('active');
+        }
+
+        function preparePrint(directorFilter) {
+            closePrintModal();
+            
+            // Guardar estado actual
+            const currentFilter = document.querySelector('#filterButtons button.active')?.dataset.filter || 'todos';
+            const tbody = document.getElementById('ganttBody');
+            
+            // Preparar info de impresión
+            const analysisDate = document.getElementById('analysisDate').value;
+            const weeks = getWeeksInHorizon(new Date(analysisDate));
+            const firstWeek = weeks[0].label;
+            const lastWeek = weeks[weeks.length - 1].label;
+            
+            let printInfoText = `Fecha de análisis: ${formatDateDDMMYYYY(analysisDate)} | Horizonte: ${firstWeek} - ${lastWeek}`;
+            if (directorFilter !== 'all') {
+                printInfoText += ` | Filtro: ${directorFilter}`;
+            }
+            document.getElementById('printInfo').textContent = printInfoText;
+            
+            // Aplicar filtro visual para impresión
+            if (directorFilter !== 'all') {
+                document.body.classList.add('print-filter');
+                
+                // Marcar filas visibles
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    row.classList.remove('print-show');
+                    
+                    // Check if it's a provider row for this director
+                    const providerName = row.querySelector('.provider-name span');
+                    if (providerName && providerName.textContent === directorFilter) {
+                        row.classList.add('print-show');
+                    }
+                    
+                    // Check if it's an obra row for this director
+                    const obraCode = row.querySelector('.obra-code');
+                    if (obraCode) {
+                        const directorCell = row.dataset.director || 
+                                           row.previousElementSibling?.querySelector('.provider-name span')?.textContent;
+                        // Find the corresponding director row
+                        let currentRow = row.previousElementSibling;
+                        while (currentRow) {
+                            const provName = currentRow.querySelector('.provider-name span');
+                            if (provName) {
+                                if (provName.textContent === directorFilter) {
+                                    row.classList.add('print-show');
+                                }
+                                break;
+                            }
+                            currentRow = currentRow.previousElementSibling;
+                        }
+                    }
+                });
+            }
+            
+            // Imprimir
+            setTimeout(() => {
+                window.print();
+                
+                // Restaurar estado
+                setTimeout(() => {
+                    document.body.classList.remove('print-filter');
+                    const rows = tbody.querySelectorAll('tr');
+                    rows.forEach(row => row.classList.remove('print-show'));
+                }, 100);
+            }, 100);
         }
 
         function toggleMeetingMode() {
