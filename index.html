@@ -598,117 +598,194 @@
             background: var(--color-bg-light);
         }
 
-        /* Print styles */
+        /* Print styles - Modo de impresión real */
         @media print {
             @page {
-                size: landscape;
-                margin: 1cm;
+                size: A4 landscape;
+                margin: 0.8cm 0.5cm;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
 
             body {
-                background: white;
-                color: #000;
-                padding: 0;
-                margin: 0;
+                background: white !important;
+                color: #000 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100%;
             }
 
+            /* Ocultar elementos de UI */
             .header .controls,
             .settings-menu,
             .modal,
-            button:not(.print-keep) {
+            button,
+            input,
+            select {
                 display: none !important;
             }
 
+            /* Header simplificado */
             .header {
-                margin-bottom: 10px;
+                margin-bottom: 8px;
                 page-break-after: avoid;
+                padding: 0;
             }
 
             .header h1 {
-                font-size: 1.2rem;
-                color: #000;
+                font-size: 1.1rem;
+                color: #000 !important;
+                margin: 0;
+                padding: 5px 0;
             }
 
+            .header h1 .logo {
+                height: 1rem;
+            }
+
+            /* Print header visible */
             .print-header {
                 display: block !important;
-                margin-bottom: 10px;
-                font-size: 0.9rem;
-                color: #333;
-                border-bottom: 2px solid #000;
-                padding-bottom: 5px;
-            }
-
-            .gantt-container {
-                box-shadow: none;
-                background: white;
-                border: 1px solid #ccc;
-                page-break-inside: auto;
-            }
-
-            .gantt-table {
-                background: white;
-            }
-
-            .gantt-table th {
-                background: #f0f0f0 !important;
-                color: #000 !important;
-                border: 1px solid #999 !important;
+                margin-bottom: 8px;
                 font-size: 0.75rem;
-                padding: 6px 4px;
+                color: #333 !important;
+                border-bottom: 1.5px solid #000;
+                padding-bottom: 4px;
+                page-break-after: avoid;
             }
 
+            /* Contenedor Gantt adaptado */
+            .gantt-container {
+                box-shadow: none !important;
+                background: white !important;
+                border: none !important;
+                border-radius: 0 !important;
+                overflow: visible !important;
+                page-break-inside: auto;
+                width: 100% !important;
+            }
+
+            /* Tabla optimizada para impresión */
+            .gantt-table {
+                background: white !important;
+                width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+                min-width: auto !important;
+            }
+
+            /* Columna de directora/obra con ancho fijo */
+            .gantt-table th.provider-col,
+            .gantt-table td:first-child {
+                width: 120px !important;
+                min-width: 120px !important;
+                max-width: 120px !important;
+            }
+
+            /* Semanas con ancho fijo para evitar cortes */
+            .gantt-table th.week-col,
+            .gantt-table td.week-cell {
+                width: 60px !important;
+                min-width: 60px !important;
+                max-width: 60px !important;
+            }
+
+            /* Headers */
+            .gantt-table th {
+                background: #e8e8e8 !important;
+                color: #000 !important;
+                border: 0.5px solid #999 !important;
+                font-size: 0.65rem !important;
+                padding: 4px 2px !important;
+                font-weight: 600 !important;
+                text-align: center !important;
+                page-break-after: avoid;
+                position: relative !important;
+            }
+
+            /* Celdas */
             .gantt-table td {
-                border: 1px solid #ddd !important;
+                border: 0.5px solid #ccc !important;
                 background: white !important;
                 color: #000 !important;
-                font-size: 0.7rem;
-                padding: 4px;
+                font-size: 0.65rem !important;
+                padding: 3px 2px !important;
+                page-break-inside: avoid;
             }
 
+            /* Filas de directora */
             .provider-row {
-                background: #f5f5f5 !important;
-                page-break-after: avoid;
+                background: #f0f0f0 !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+
+            .provider-row td {
+                background: #f0f0f0 !important;
             }
 
             .provider-name {
                 color: #000 !important;
-                font-size: 0.85rem;
+                font-size: 0.75rem !important;
+                font-weight: 700 !important;
             }
 
             .provider-stats {
                 color: #333 !important;
-                font-size: 0.7rem;
+                font-size: 0.6rem !important;
             }
 
+            /* Códigos de obra */
             .obra-code {
-                color: #333 !important;
-                font-size: 0.75rem;
+                color: #222 !important;
+                font-size: 0.68rem !important;
+                padding-left: 8px !important;
             }
 
+            /* Celdas de semanas */
             .week-cell {
                 background: white !important;
+                position: relative !important;
+                min-height: 22px !important;
             }
 
+            /* Barras de trabajo - CRÍTICO */
             .work-bar {
                 opacity: 1 !important;
-                font-size: 0.65rem;
-                height: 20px;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
+                font-size: 0.58rem !important;
+                font-weight: 600 !important;
+                height: 18px !important;
+                line-height: 18px !important;
+                position: absolute !important;
+                border-radius: 2px !important;
+                /* Forzar colores en impresión */
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
 
+            /* Barras tentativas */
             .work-bar.tentativo {
-                opacity: 0.7 !important;
+                opacity: 0.75 !important;
+                border: 1px dashed rgba(0,0,0,0.4) !important;
             }
 
-            /* Hide rows not in selected director for print */
-            body.print-filter .provider-row:not(.print-show),
-            body.print-filter tr:has(.obra-code):not(.print-show) {
-                display: none !important;
+            /* Evitar que las barras se corten */
+            tr {
+                page-break-inside: avoid !important;
             }
 
-            .logo {
-                height: 1.2rem;
+            /* Forzar saltos de página razonables */
+            tbody {
+                page-break-inside: auto;
+            }
+
+            .provider-row + tr + tr + tr + tr + tr {
+                page-break-after: auto;
             }
         }
 
@@ -722,6 +799,18 @@
             }
         }
     
+
+        .import-option {
+            width: 100%;
+            text-align: left;
+            padding: 12px;
+            background: var(--color-bg);
+            border: 2px solid var(--color-border);
+        }
+
+        .import-option:hover {
+            background: var(--color-bg-light);
+        }
         /* iOS/Mobile improvements */
         * {
             -webkit-tap-highlight-color: rgba(0,0,0,0.1);
@@ -888,17 +977,42 @@
     <div class="modal" id="printModal">
         <div class="modal-content">
             <h2>Imprimir / Exportar PDF</h2>
+            <p style="margin-bottom: 15px; font-size: 0.9rem; opacity: 0.9;">
+                Al imprimir, el calendario se adaptará automáticamente al formato A4 horizontal.
+            </p>
+            <div class="modal-actions" style="justify-content: center;">
+                <button type="button" id="doPrintBtn" style="padding: 15px 30px; font-size: 1rem;">
+                    🖨️ Imprimir calendario
+                </button>
+                <button type="button" class="secondary" id="closePrintBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para importación selectiva -->
+    <div class="modal" id="importSelectiveModal">
+        <div class="modal-content">
+            <h2>Importar datos</h2>
             <div class="form-group">
-                <label>Selecciona qué imprimir:</label>
+                <label>Selecciona cómo importar:</label>
                 <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                    <button type="button" class="print-option" data-director="all">📄 Imprimir todo</button>
+                    <button type="button" class="import-option" id="importAllBtn">
+                        📥 Importar todo (reemplaza todo el calendario)
+                    </button>
                     <hr style="border: none; border-top: 1px solid var(--color-border); margin: 5px 0;">
-                    <label style="font-size: 0.9rem; opacity: 0.8;">Por directora:</label>
-                    <div id="printDirectorOptions"></div>
+                    <label style="font-size: 0.9rem; opacity: 0.8;">Importar solo una directora:</label>
+                    <select id="importDirectorSelect" style="padding: 10px; font-size: 0.95rem;">
+                        <option value="">Selecciona una directora...</option>
+                    </select>
+                    <button type="button" class="secondary" id="importSelectedBtn" disabled>
+                        Importar solo esta directora
+                    </button>
+                </div>
+                <div id="importWarning" style="display: none; margin-top: 15px; padding: 10px; background: rgba(244,67,54,0.1); border-left: 3px solid #F44336; font-size: 0.85rem;">
                 </div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="secondary" id="closePrintBtn">Cancelar</button>
+                <button type="button" class="secondary" id="closeImportSelectiveBtn">Cancelar</button>
             </div>
         </div>
     </div>
@@ -989,6 +1103,12 @@
             // Print
             document.getElementById('printBtn').addEventListener('click', openPrintModal);
             document.getElementById('closePrintBtn').addEventListener('click', closePrintModal);
+            document.getElementById('doPrintBtn').addEventListener('click', doPrint);
+            
+            // Import selective
+            document.getElementById('importAllBtn').addEventListener('click', doImportAll);
+            document.getElementById('importSelectedBtn').addEventListener('click', doImportSelected);
+            document.getElementById('closeImportSelectiveBtn').addEventListener('click', closeImportSelectiveModal);
             // Works management
             document.getElementById('manageWorksBtn').addEventListener('click', openWorksModal);
             document.getElementById('closeWorksBtn').addEventListener('click', closeWorksModal);
@@ -1028,6 +1148,14 @@
 
             document.getElementById('horizonModal').addEventListener('click', (e) => {
                 if (e.target.id === 'horizonModal') closeHorizonModal();
+            });
+
+            document.getElementById('printModal').addEventListener('click', (e) => {
+                if (e.target.id === 'printModal') closePrintModal();
+            });
+
+            document.getElementById('importSelectiveModal').addEventListener('click', (e) => {
+                if (e.target.id === 'importSelectiveModal') closeImportSelectiveModal();
             });
 
             // Close settings on outside click
@@ -1609,21 +1737,7 @@
             }
         }
 
-        function openPrintModal() {
-            // Populate director options
-            const printOptions = document.getElementById('printDirectorOptions');
-            printOptions.innerHTML = directors.map(d => 
-                `<button type="button" class="print-option" data-director="${d.name}">📄 ${d.name}</button>`
-            ).join('');
-            
-            // Add click handlers
-            document.querySelectorAll('.print-option').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const director = this.dataset.director;
-                    preparePrint(director);
-                });
-            });
-            
+                function openPrintModal() {
             document.getElementById('printModal').classList.add('active');
             document.getElementById('settingsDropdown').classList.remove('active');
         }
@@ -1632,12 +1746,8 @@
             document.getElementById('printModal').classList.remove('active');
         }
 
-        function preparePrint(directorFilter) {
+        function doPrint() {
             closePrintModal();
-            
-            // Guardar estado actual
-            const currentFilter = document.querySelector('#filterButtons button.active')?.dataset.filter || 'todos';
-            const tbody = document.getElementById('ganttBody');
             
             // Preparar info de impresión
             const analysisDate = document.getElementById('analysisDate').value;
@@ -1645,58 +1755,12 @@
             const firstWeek = weeks[0].label;
             const lastWeek = weeks[weeks.length - 1].label;
             
-            let printInfoText = `Fecha de análisis: ${formatDateDDMMYYYY(analysisDate)} | Horizonte: ${firstWeek} - ${lastWeek}`;
-            if (directorFilter !== 'all') {
-                printInfoText += ` | Filtro: ${directorFilter}`;
-            }
+            const printInfoText = `Fecha de análisis: ${formatDateDDMMYYYY(analysisDate)} | Periodo: ${firstWeek} - ${lastWeek} | Horizonte: ${horizonMonths} meses`;
             document.getElementById('printInfo').textContent = printInfoText;
             
-            // Aplicar filtro visual para impresión
-            if (directorFilter !== 'all') {
-                document.body.classList.add('print-filter');
-                
-                // Marcar filas visibles
-                const rows = tbody.querySelectorAll('tr');
-                rows.forEach(row => {
-                    row.classList.remove('print-show');
-                    
-                    // Check if it's a provider row for this director
-                    const providerName = row.querySelector('.provider-name span');
-                    if (providerName && providerName.textContent === directorFilter) {
-                        row.classList.add('print-show');
-                    }
-                    
-                    // Check if it's an obra row for this director
-                    const obraCode = row.querySelector('.obra-code');
-                    if (obraCode) {
-                        const directorCell = row.dataset.director || 
-                                           row.previousElementSibling?.querySelector('.provider-name span')?.textContent;
-                        // Find the corresponding director row
-                        let currentRow = row.previousElementSibling;
-                        while (currentRow) {
-                            const provName = currentRow.querySelector('.provider-name span');
-                            if (provName) {
-                                if (provName.textContent === directorFilter) {
-                                    row.classList.add('print-show');
-                                }
-                                break;
-                            }
-                            currentRow = currentRow.previousElementSibling;
-                        }
-                    }
-                });
-            }
-            
-            // Imprimir
+            // Dar tiempo al navegador para aplicar estilos
             setTimeout(() => {
                 window.print();
-                
-                // Restaurar estado
-                setTimeout(() => {
-                    document.body.classList.remove('print-filter');
-                    const rows = tbody.querySelectorAll('tr');
-                    rows.forEach(row => row.classList.remove('print-show'));
-                }, 100);
             }, 100);
         }
 
@@ -1763,6 +1827,105 @@
             saveData();
         }
 
+        let pendingImportData = null;
+
+        function openImportSelectiveModal(data) {
+            pendingImportData = data;
+            
+            // Detectar directoras en el JSON
+            const directorsInFile = [];
+            if (data.directors && Array.isArray(data.directors)) {
+                directorsInFile.push(...data.directors.map(d => d.name));
+            } else if (data.assignments && Array.isArray(data.assignments)) {
+                // Extraer directoras únicas de las asignaciones
+                const uniqueDirectors = [...new Set(data.assignments.map(a => a.director))];
+                directorsInFile.push(...uniqueDirectors);
+            }
+            
+            // Populate selector
+            const select = document.getElementById('importDirectorSelect');
+            select.innerHTML = '<option value="">Selecciona una directora...</option>' +
+                directorsInFile.map(d => `<option value="${d}">${d}</option>`).join('');
+            
+            // Setup listeners
+            select.onchange = function() {
+                const btn = document.getElementById('importSelectedBtn');
+                const warning = document.getElementById('importWarning');
+                
+                if (this.value) {
+                    btn.disabled = false;
+                    warning.style.display = 'block';
+                    warning.textContent = `⚠️ Esto reemplazará todas las obras de ${this.value} en tu calendario actual. Las obras de otras directoras NO se modificarán.`;
+                } else {
+                    btn.disabled = true;
+                    warning.style.display = 'none';
+                }
+            };
+            
+            document.getElementById('importSelectiveModal').classList.add('active');
+        }
+
+        function closeImportSelectiveModal() {
+            document.getElementById('importSelectiveModal').classList.remove('active');
+            pendingImportData = null;
+        }
+
+        function doImportAll() {
+            if (!pendingImportData) return;
+            
+            if (confirm('¿Importar datos? Esto reemplazará TODO el calendario actual.')) {
+                if (pendingImportData.directors) {
+                    directors = pendingImportData.directors;
+                    saveDirectors();
+                }
+                if (pendingImportData.assignments) {
+                    assignments = pendingImportData.assignments;
+                } else if (Array.isArray(pendingImportData)) {
+                    assignments = pendingImportData;
+                }
+                saveData();
+                updateDirectorSelectors();
+                renderGantt();
+                closeImportSelectiveModal();
+            }
+        }
+
+        function doImportSelected() {
+            const selectedDirector = document.getElementById('importDirectorSelect').value;
+            if (!selectedDirector || !pendingImportData) return;
+            
+            if (!confirm(`¿Confirmas importar solo las obras de ${selectedDirector}? Esto reemplazará todas sus obras actuales.`)) {
+                return;
+            }
+            
+            // Filtrar asignaciones del JSON para la directora seleccionada
+            let newAssignments = [];
+            if (pendingImportData.assignments && Array.isArray(pendingImportData.assignments)) {
+                newAssignments = pendingImportData.assignments.filter(a => a.director === selectedDirector);
+            } else if (Array.isArray(pendingImportData)) {
+                newAssignments = pendingImportData.filter(a => a.director === selectedDirector);
+            }
+            
+            // Eliminar obras actuales de esa directora
+            assignments = assignments.filter(a => a.director !== selectedDirector);
+            
+            // Agregar las nuevas
+            assignments.push(...newAssignments);
+            
+            // Asegurar que la directora existe en la lista
+            if (!directors.some(d => d.name === selectedDirector)) {
+                directors.push({ name: selectedDirector });
+                saveDirectors();
+                updateDirectorSelectors();
+            }
+            
+            saveData();
+            renderGantt();
+            closeImportSelectiveModal();
+            
+            alert(`✓ Importación completada: ${newAssignments.length} obras de ${selectedDirector} importadas.`);
+        }
+
         function exportData() {
             const exportObj = {
                 directors: directors,
@@ -1787,20 +1950,8 @@
             reader.onload = (event) => {
                 try {
                     const data = JSON.parse(event.target.result);
-                    if (confirm('¿Importar datos? Esto reemplazará todos los datos actuales.')) {
-                        if (data.directors) {
-                            directors = data.directors;
-                            saveDirectors();
-                        }
-                        if (data.assignments) {
-                            assignments = data.assignments;
-                        } else if (Array.isArray(data)) {
-                            assignments = data;
-                        }
-                        saveData();
-                        updateDirectorSelectors();
-                        renderGantt();
-                    }
+                    // Abrir modal de importación selectiva
+                    openImportSelectiveModal(data);
                 } catch (error) {
                     alert('Error al importar: archivo JSON inválido');
                 }
